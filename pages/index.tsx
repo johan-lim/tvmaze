@@ -77,7 +77,12 @@ const Home: NextPage = () => {
         </p>
 
         <div className="mt-4 flex items-center bg-white p-7 justify-between w-full sticky top-0 z-10">
-          <Input placeholder="Search shows here..." value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
+          <Input
+            placeholder="Search shows here..."
+            value={inputValue}
+            onEnterPress={search}
+            onChange={(e) => setInputValue(e.target.value)}
+          />
           <div className="w-1/5">
             <Button onClick={search}>Search...</Button>
           </div>
