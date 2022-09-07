@@ -11,6 +11,7 @@ const Home: NextPage = () => {
   const [isMounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
+  const [filterQuery, setFilterQuery] = useState<string>('');
   const [page, setPage] = useState(0);
   const [showSummary, setShowSummary] = useState(true);
   const [displayedEpisodes, setDisplayedEpisodes] = useState<EpisodeType[]>([]);
@@ -28,13 +29,19 @@ const Home: NextPage = () => {
 
   const { episodes = [] } = _embedded || {};
 
+  const matchesEpisodeFilter = (query: string, episodes: EpisodeType[]) =>
+    episodes.filter(episode => episode.name.toLowerCase().includes(query.toLowerCase()) ||
+      episode.summary.toLowerCase().includes(query.toLowerCase()));
+
   useEffect(() => {
     if (episodes.length) {
       const fullPage = page * PAGE_SIZE;
       const displayEpisodes = episodes.slice(0, fullPage + PAGE_SIZE);
-      setDisplayedEpisodes(displayEpisodes);
+      const filteredEpisodes = filterQuery ? matchesEpisodeFilter(filterQuery, displayEpisodes) : displayEpisodes;
+      setDisplayedEpisodes(filteredEpisodes);
     }
-  }, [episodes, page])
+  }, [episodes, page, filterQuery])
+
 
   useEffect(() => {
     if (isMounted) {
@@ -53,6 +60,12 @@ const Home: NextPage = () => {
     setShowSummary(true);
     setSearchQuery(inputValue);
     window.location.hash = inputValue;
+    setInput('');
+  }
+
+  const setInput = (value: string) => {
+    setInputValue(value);
+    setFilterQuery(value);
   }
 
   const showMore = () => {
@@ -81,7 +94,7 @@ const Home: NextPage = () => {
             placeholder="Search shows here..."
             value={inputValue}
             onEnterPress={search}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => setInput(e.target.value)}
           />
           <div className="w-1/5">
             <Button onClick={search}>Search...</Button>
@@ -105,4 +118,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default Home;
